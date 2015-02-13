@@ -7,8 +7,10 @@ For more information on this file, see
 https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
 """
 
-import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "DeepDiveWeb.settings")
+import os, sys
+sys.path.append('/home/iaross/deepdive_site_prd/DeepDive/')
+os.environ['DJANGO_SETTINGS_MODULE'] = 'DeepDiveWeb.settings'
 
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+import django.core.handlers.wsgi
+
+application = django.core.handlers.wsgi.WSGIHandler()
