@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+{% load staticfiles %}
+
+<body>
+    <center>
+        <table class="table-bordered" width="60%" style="text-align: center">
+            <col width="10%">
+            <col width="90%">
+            <tr>
+                <td>Title</td>
+                <td>{{ article.title }} </td>
+            </tr>
+            <tr>
+                <td>Authors</td>
+                <td>{{ article.authors }} </td>
+            </tr>
+            <tr>
+                <td>Publication Name</td>
+                <td>{{ article.pubname }} </td>
+            </tr>
+            <tr>
+                <td>URL</td>
+                <td>{{ article.URL }} </td>
+            </tr>
+            <tr style="text-align: center;">
+                <td>Processing</td>
+                <td>
+                    <table style="margin-left: auto; margin-right: auto;">
+                        <tr>
+                            <td>OCR</td>
+                            <td>NLP</td>
+                            <td>Cuneiform</td>
+                            <td>FontType</td>
+                        </tr>
+                        <tr>
+                            <td>{{ article.ocr_processing.elsevier_002.harvested }} </td>
+                            <td>{{ article.nlp_processing.elsevier_002.harvested }} </td>
+                            <td>{{ article.cuneiform_processing.elsevier_002.harvested }} </td>
+                            <td>{{ article.fonttype_processing.elsevier_002.harvested }} </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>Contents</td>
+                <td>{{ article.contents }} </td>
+            </tr>
+        </table>
+    </center>
+</body>
+{% endblock %}

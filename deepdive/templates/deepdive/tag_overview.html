@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static %}
+{% load template_helpers %}
+
+{% block content %}
+<head>
+    <script>
+        function makeGauge(data, div, max){
+            var chart = c3.generate({
+                bindto: div,
+                padding: {
+                    left: 15,
+                    right: 15,
+                    top: 15,
+                    bottom: 15,
+                },
+                data: {
+                    columns: [
+                    ['Submitted', data]
+                    ],
+                    type: 'gauge',
+                    onclick: function (d, i) { console.log("onclick", d, i); },
+                    onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+                    onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+                },
+                gauge: {
+                    //        label: {
+                        //            format: function(value, ratio) {
+                            //                return value;
+                            //            },
+                        //            show: false // to turn off the min/max labels.
+                        //        },
+                    //    min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+                    max: max, // 100 is default
+                    //    units: ' %',
+                    //    width: 39 // for adjusting arc thickness
+                },
+                color: {
+                    pattern: ['#FF0000', '#F97600', '#F6C600', '#B1DB30', '#60B044'], // the three color levels for the percentage values.
+                    threshold: {
+                        unit: 'percentage', // percentage is default
+                        max: max, // 100 is default
+                        values: [30, 60, 80, 90, 100]
+                    }
+                },
+                size: {
+                    height: 150,
+                    width: 150
+                }
+            });
+        }
+
+
+    </script>
+</head>
+
+<h3>
+    {{ tag }}
+</h3>
+<div>
+    <table class="table table-striped" width="50%">
+        <col width="20%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <tr class="headers">
+            <th></th>
+            <th colspan="4">Jobs submitted</th>
+        </tr>
+        <tr class="headers">
+            <th>Publication Name</th>
+            <th colspan="1">OCR</th>
+            <th colspan="1">NLP</th>
+            <th colspan="1">Cuneiform</th>
+            <th colspan="1">FontType</th>
+        </tr>
+        <tr class="totals">
+            <td>Totals</td>
+            <td>
+                <div id='total_ocr_gauge'></div>
+            </td>
+            <td>
+                <div id='total_nlp_gauge'></div>
+            </td>
+            <td>
+                <div id='total_cuneiform_gauge'></div>
+            </td>
+            <td>
+                <div id='total_fonttype_gauge'></div>
+            </td>
+        </tr>
+        <script>
+            makeGauge({{ total.ocr.total }}, '#total_ocr_gauge', {{ total.fetched }})
+            makeGauge({{ total.nlp.total }}, '#total_nlp_gauge', {{ total.fetched }})
+            makeGauge({{ total.cuneiform.total }}, '#total_cuneiform_gauge', {{ total.fetched }})
+            makeGauge({{ total.fonttype.total }}, '#total_fonttype_gauge', {{ total.fetched }})
+        </script>
+        {% for pub in test %}
+        <tr>
+            <td>
+                {{ pub.title }}
+            </td>
+            <td>
+                <div id='{{ pub.nospace }}_ocr_gauge'></div>
+            </td>
+            <td>
+                <div id='{{ pub.nospace }}_nlp_gauge'></div>
+            </td>
+            <td>
+                <div id='{{ pub.nospace }}_cuneiform_gauge'></div>
+            </td>
+            <td>
+                <div id='{{ pub.nospace }}_fonttype_gauge'></div>
+            </td>
+        </tr>
+        <script>
+            makeGauge({{ pub.ocr.total }}, '#{{ pub.nospace}}_ocr_gauge', {{ pub.fetched }})
+            makeGauge({{ pub.nlp.total }}, '#{{ pub.nospace}}_nlp_gauge', {{ pub.fetched }})
+            makeGauge({{ pub.cuneiform.total }}, '#{{ pub.nospace}}_cuneiform_gauge', {{ pub.fetched }})
+            makeGauge({{ pub.fonttype.total }}, '#{{ pub.nospace}}_fonttype_gauge', {{ pub.fetched }})
+        </script>
+
+        {% endfor %}
+
+    </tr>
+</table>
+    </div>
+</body>
+{% endblock %}

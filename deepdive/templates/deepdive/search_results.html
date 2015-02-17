@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+{% load staticfiles %}
+<body>
+{% if found_entries %}
+You searched for "{{ query_string }}" and {{ nEntries }} results were found.
+{% if nEntries > 5 %}
+Only the first 5 results are listed below.
+{% endif %}
+<table class="search-table table-bordered" width="100%">
+    <tr class="header">
+        <td width="10%">Score</td>
+        <td width="50%">Title</td>
+        <td width="40%">Publication</td>
+    </tr>
+    {% for article in found_entries %}
+    <tr>
+        <td>{{ article.score }}</td>
+        <td><a href="/deepdive/article/{{ article.id }}">{{ article.title }}</a></td>
+        <td>{{ article.pubname }}</td>
+    </tr>
+    {% endfor %}
+    {% if nEntries > 5 %}
+        <tr>
+            <td></td>
+        </tr>
+    {% endif %}
+</table>
+
+{% else %}
+No results found!
+{% endif %}
+
+{% endblock %}
+
+</body>

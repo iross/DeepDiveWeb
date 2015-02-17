@@ -1,0 +1,45 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/c3.css' %}">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<script src="{% static 'js/c3-0.4.9/c3.min.js' %}"></script>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+<div style="background-color: #EFEFEF; height: 75px; padding: 5px;">
+    <table width="100%">
+        <col width="10%">
+        <col width="80%">
+        <col width="10%">
+        <tr>
+            <td style="text-align: left;">
+                Viewing as: {{ user }}<br>
+            </td>
+            <td></td>
+            {% if user.is_anonymous %}
+            <td>
+                <a href="{% url 'django.contrib.auth.views.login' %}">Login</a>
+            </td>
+            {% else %}
+            <td>
+                <a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a>
+            </td>
+            {% endif %}
+        </tr>
+        <col width="100%">
+        <tr>
+            <td style="text-align: left;"><a href="/">Home</a></td>
+            <td style="padding: 5px; text-align: center;">
+                <form action="/deepdive/search/" method="get">
+                    <label for="id_q">Search:</label>
+                    <input type="text" name="q" id="id_q" size="64"/>
+                    <input type="submit" value="Submit"/>
+                </form>
+            </td>
+            <td width="10%"></td>
+        </tr>
+    </table>
+</div>
+{% block content %}
+{% endblock %}
+

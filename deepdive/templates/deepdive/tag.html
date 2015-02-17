@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% load static %}
+{% load template_helpers %}
+
+{% block content %}
+<head>
+    <script>
+        function makeChart(div, data, title){
+            var chart = c3.generate({
+                size: {
+                    height: 100,
+                    width: 100
+                },
+                bindto: div,
+                data: {
+                    columns: data,
+                    type : 'donut',
+                    onclick: function (d, i) { console.log("onclick", d, i); },
+                    onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+                    onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+                },
+                color: {
+                    pattern: ["#60B044","#FF0000"] 
+                },
+                donut: {
+                    title: title,
+                    label: {
+                        //            format: function(value, ratio) {
+                            //                return value;
+                            //            },
+                        show: false // to turn off the min/max labels.
+                    },
+                }
+            });
+        }
+        function makeGauge(data, div, max){
+            var chart = c3.generate({
+                bindto: div,
+                padding: {
+                    left: 15,
+                    right: 15,
+                    top: 15,
+                    bottom: 15,
+                },
+                data: {
+                    columns: [
+                    ['Submitted', data]
+                    ],
+                    type: 'gauge',
+                    onclick: function (d, i) { console.log("onclick", d, i); },
+                    onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+                    onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+                },
+                gauge: {
+                    //        label: {
+                        //            format: function(value, ratio) {
+                            //                return value;
+                            //            },
+                        //            show: false // to turn off the min/max labels.
+                        //        },
+                    //    min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+                    max: max, // 100 is default
+                    //    units: ' %',
+                    //    width: 39 // for adjusting arc thickness
+                },
+                color: {
+                    pattern: ['#FF0000', '#F97600', '#F6C600', '#B1DB30', '#60B044'], // the three color levels for the percentage values.
+                    threshold: {
+                        unit: 'percentage', // percentage is default
+                        max: max, // 100 is default
+                        values: [30, 60, 80, 90, 100]
+                    }
+                },
+                size: {
+                    height: 150,
+                    width: 150
+                }
+            });
+        }
+
+
+    </script>
+</head>
+
+<h3>
+    {{ tag }}
+</h3>
+<div>
+    <table class="table table-striped" width="50%">
+        <col width="20%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <tr class="headers">
+            <th></th>
+            <th colspan="3">OCR</th>
+            <th colspan="3">NLP</th>
+        </tr>
+        <tr class="headers">
+            <th>Publication Name</th>
+            <th>Jobs submitted</th>
+            <th>Job success</th>
+            <th>CPU Time</th>
+            <th>Jobs submitted</th>
+            <th>Job success</th>
+            <th>CPU Time</th>
+        </tr>
+        <tr class="totals">
+            <td>Totals</td>
+            <td>
+                <div id='total_ocr_gauge'></div>
+            </td>
+            <td>
+                <div id='total_ocr_chart'></div>
+                Success: {{ total.ocr.data.0.1 }}<br>
+                Failure: {{ total.ocr.data.1.1 }}<br>
+            </td>
+            <td>
+                <div id='total_ocr_cpu_chart'></div>
+                Success: {{ total.ocr.cpudata.0.1|divide:60 }}<br>
+                Failure: {{ total.ocr.cpudata.1.1|divide:60 }}<br>
+            </td>
+            <td>
+                <div id='total_nlp_gauge'></div>
+            </td>
+            <td>
+                <div id='total_nlp_chart'></div>
+                Success: {{ total.nlp.data.0.1 }}<br>
+                Failure: {{ total.nlp.data.1.1 }}<br>
+            </td>
+            <td>
+                <div id='total_nlp_cpu_chart'></div>
+                Success: {{ total.nlp.cpudata.0.1|divide:60 }}<br>
+                Failure: {{ total.nlp.cpudata.1.1|divide:60 }}<br>
+            </td>
+        </tr>
+        <script>
+            makeGauge({{ total.ocr.total }}, '#total_ocr_gauge', {{ total.fetched }})
+            var obj={{ total.ocr.data|safe }}
+            makeChart('#total_ocr_chart', obj, "")
+            var obj={{ total.ocr.cpudata|safe }}
+            makeChart('#total_ocr_cpu_chart', obj, "")
+            makeGauge({{ total.nlp.total }}, '#total_nlp_gauge', {{ total.fetched }})
+            var obj={{ total.nlp.data|safe }}
+            makeChart('#total_nlp_chart', obj, "")
+            var obj={{ total.nlp.cpudata|safe }}
+            makeChart('#total_nlp_cpu_chart', obj, "")
+        </script>
+        {% for pub in test %}
+        <tr>
+            <td>
+                {{ pub.title }}
+            </td>
+            <td>
+                <div id='{{ pub.nospace }}_ocr_gauge'></div>
+            </td>
+            <td>
+                <div id='{{ pub.nospace }}_ocr_chart'></div>
+                Success: {{ pub.ocr.data.0.1 }}<br>
+                Failure: {{ pub.ocr.data.1.1 }}<br>
+            </td>
+            <td>
+                <div id='{{ pub.nospace }}_ocr_cpu_chart'></div>
+                Success: {{  pub.ocr.cpudata.0.1|divide:60 }}<br>
+                Failure: {{ pub.ocr.cpudata.1.1|divide:60 }} <br>
+            </td>
+            <td>
+                <div id='{{ pub.nospace }}_nlp_gauge'></div>
+            </td>
+            <td>
+                <div id='{{ pub.nospace }}_nlp_chart'></div>
+                Success: {{ pub.nlp.data.0.1 }}<br>
+                Failure: {{ pub.nlp.data.1.1 }}<br>
+            </td>
+            <td>
+                <div id='{{ pub.nospace }}_nlp_cpu_chart'></div>
+                Success: {{  pub.nlp.cpudata.0.1|divide:60 }}<br>
+                Failure: {{ pub.nlp.cpudata.1.1|divide:60 }} <br>
+            </td>
+        </tr>
+        <script>
+            makeGauge({{ pub.ocr.total }}, '#{{ pub.nospace}}_ocr_gauge', {{ pub.fetched }})
+            var obj={{ pub.ocr.data|safe }}
+            makeChart('#{{ pub.nospace }}_ocr_chart', obj, "")
+            var obj={{ pub.ocr.cpudata|safe }}
+            makeChart('#{{ pub.nospace }}_ocr_cpu_chart', obj, "")
+            makeGauge({{ pub.nlp.total }}, '#{{ pub.nospace}}_nlp_gauge', {{ pub.fetched }})
+            var obj={{ pub.nlp.data|safe }}
+            makeChart('#{{ pub.nospace }}_nlp_chart', obj, "")
+            var obj={{ pub.nlp.cpudata|safe }}
+            makeChart('#{{ pub.nospace }}_nlp_cpu_chart', obj, "")
+        </script>
+
+        {% endfor %}
+
+    </tr>
+</table>
+    </div>
+</body>
+{% endblock %}

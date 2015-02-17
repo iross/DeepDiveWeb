@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+{% load template_helpers %}
+
+{% block content %}
+<body>
+    <table class="overview_table" width="40%">
+        <th colspan="4">{{ pub.pubname }}</th>
+        <tr>
+            <td rowspan="2" >
+                Fetched<br>
+                <div class="count_big">{{ pub.fetched }}</div>
+            </td>
+            <td>
+                OCRed<br>
+                <div class="count_small">{{ pub.ocr.0.1 }}</div>
+            </td>
+            <td>
+                Cuneiform'ed<br>
+                <div class="count_small">{{ pub.cuneiform.0.1 }}</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                NLPed<br>
+                <div class="count_small">{{ pub.nlp.0.1 }}</div>
+            </td>
+            <td>
+                FontType'd<br>
+                <div class="count_small">{{ pub.fonttype.0.1 }}</div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="article_table table-bordered" width="80%">
+        <col width="80%">
+        <col width="20%">
+        {% for article in articles %}
+
+        <tr>
+            <td>{{ article.title }} </td>
+            <td>{{ article.authors }} </td>
+        </tr>
+        {% endfor %}
+</body>
+
+{% endblock %}
