@@ -377,7 +377,7 @@ def index(request):
                     cputotal+=timestamp['total'][proctype]['cpufailure']
                 except KeyError:
                     pass
-                cputime[proctype].append(cputotal/3600)
+                cputime[proctype].append(float(cputotal)/3600)
             i=i+1
 
         times = ['times'] + times
@@ -397,9 +397,9 @@ def index(request):
             range["failure"]["total"] += range["failure"][proctype]
             if cputime[proctype][0] == 0: # only needed until DB fills in
                 ind = next((i for i, x in enumerate(cputime[proctype]) if x), None)
-                range["cputime"]["total"] += cputime[proctype][-1] - cputime[proctype][ind]
+                range["cputime"]["total"] += int(cputime[proctype][-1] - cputime[proctype][ind])
             else:
-                range["cputime"]["total"] += cputime[proctype][-1] - cputime[proctype][0]
+                range["cputime"]["total"] += int(cputime[proctype][-1] - cputime[proctype][0])
 
         timesdict[timeframe] = times
         totalsdict[timeframe] = totals
