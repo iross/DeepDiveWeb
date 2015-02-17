@@ -324,7 +324,7 @@ def index(request):
     PROCTYPES = ["ocr","nlp","cuneiform","fonttype"]
     uri = "mongodb://%s:%s@127.0.0.1/?authMechanism=MONGODB-CR" % (reader_user, reader_password)
     client = pymongo.MongoClient(uri)
-    timedb = client.fetching_metrics_dev
+    timedb = client.fetching_metrics
     timesdict = {}
     totalsdict = {}
     proctype_dict={}
@@ -343,9 +343,11 @@ def index(request):
         total={}
         success={}
         failure={}
+        cputime={}
         proctype_totals = {}
         proctype_dict[timeframe] = {}
 
+        range["cputime"] = {}
         range["success"]={}
         range["success"]["total"]=0
         range["failure"]={}
@@ -357,14 +359,25 @@ def index(request):
             total[proctype] = []
             success[proctype] = []
             failure[proctype] = []
+            cputime[proctype] = []
             proctype_totals[proctype]=[]
             proctype_dict[timeframe][proctype] = {}
         for timestamp in docs:
+            cputotal = 0
             times.append(timestamp['time'].strftime(FORMAT))
             totals.append(timestamp['total']['fetched'])
             for proctype in PROCTYPES:
                 total[proctype].append(timestamp['total'][proctype]['total'])
                 success[proctype].append(timestamp['total'][proctype]['success'])
+                try:
+                    cputotal+=timestamp['total'][proctype]['cpusuccess']
+                except KeyError:
+                    pass
+                try:
+                    cputotal+=timestamp['total'][proctype]['cpufailure']
+                except KeyError:
+                    pass
+                cputime[proctype].append(cputotal/3600)
             i=i+1
 
         times = ['times'] + times
@@ -372,6 +385,7 @@ def index(request):
 
         # get the "completed in this timeframe" numbers
         range["fetched"] = totals[-1]-totals[1]
+        range["cputime"]["total"] = 0
         # for proctype for success/failures
         for proctype in PROCTYPES:
             range["success"][proctype] = success[proctype][-1] - success[proctype][0]
@@ -381,6 +395,11 @@ def index(request):
             proctype_dict[timeframe][proctype] = proctype_totals[proctype]
             range["success"]["total"] += range["success"][proctype]
             range["failure"]["total"] += range["failure"][proctype]
+            if cputime[proctype][0] == 0: # only needed until DB fills in
+                ind = next((i for i, x in enumerate(cputime[proctype]) if x), None)
+                range["cputime"]["total"] += cputime[proctype][-1] - cputime[proctype][ind]
+            else:
+                range["cputime"]["total"] += cputime[proctype][-1] - cputime[proctype][0]
 
         timesdict[timeframe] = times
         totalsdict[timeframe] = totals
