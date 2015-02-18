@@ -26,13 +26,11 @@ class ProcForm(forms.Form):
                 choices=get_tag_options(proctype) )
 
 class Article(models.Model):
-#    id = models.CharField()
+    class Meta:
+        db_table = 'articles'
     title = models.CharField(max_length = 1024)
     pubname = models.CharField(max_length = 256)
     sha1 = models.CharField(max_length = 32)
-    class Meta:
-        db_table = 'articles'
-    objects = MongoDBManager()
 
 class NlpProcessing(models.Model):
     tag = models.CharField(max_length = 256)

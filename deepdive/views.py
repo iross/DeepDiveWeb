@@ -4,6 +4,7 @@ from collections import OrderedDict
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from rest_framework import viewsets
 from bson.objectid import ObjectId
 import ConfigParser
 import pymongo
@@ -12,6 +13,7 @@ import re
 import pdb
 from django.conf import settings
 import urllib
+from deepdive.serializers import ArticleSerializer
 
 config = ConfigParser.RawConfigParser()
 config.read(settings.BASE_DIR + '/deepdiveweb.cfg')
@@ -27,6 +29,10 @@ def processing(request):
     if request.method == "POST":
         form = ProcForm(request.POST)
     return render(request, 'deepdive/tag.html', {'proctype':proctype, 'tag':tag})
+
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
 
 @login_required
 def processingForm(request, proctype="OCR"):
@@ -377,7 +383,7 @@ def index(request):
                     cputotal+=timestamp['total'][proctype]['cpufailure']
                 except KeyError:
                     pass
-                cputime[proctype].append(float(cputotal)/3600)
+                cputime[proctype].append(float(cputotal)/3600.0)
             i=i+1
 
         times = ['times'] + times
@@ -558,7 +564,7 @@ def search(request):
                     "cuneiform_processing":0,
                     "fonttype_processing":0,
                  'score':{'$meta': 'textScore'}})
-        cursor = cursor.sort([('score', {'$meta': 'textScore'})]).limit(30)
+        cursor = cursor.sort([('score', {'$meta': 'textScore'})]).limit(50)
         for art in cursor:
             art["id"] = art["_id"]
             articlesList.append(art)

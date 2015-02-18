@@ -20,7 +20,8 @@ secret_key = config.get('django', 'secret_key')
 dbname = config.get('database', 'name')
 dbuser = config.get('database', 'user')
 dbpassword = config.get('database', 'password')
-#dbpassword = urllib.quote_plus(dbpassword)
+readeruser = config.get('database', 'reader_user')
+readerpassword = config.get('database', 'reader_password')
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -29,9 +30,11 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
-SITE_ID = "54e2790475827d77d80e16ce"
+SITE_ID = "54e3aed875827d497bb017df"
 
 MANAGERS = ADMINS
+
+DATABASE_ROUTERS = ['deepdive.router.DatabaseRouter',]
 
 DATABASES = {
     'default': {
@@ -61,12 +64,13 @@ DATABASES = {
     'articles': {
         'ENGINE': 'django_mongodb_engine', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'articles_dev',                      # Or path to database file if using sqlite3.
-        'USER': '',
-        'PASSWORD': '',
+        'USER': readeruser,
+        'PASSWORD': readerpassword,
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.
     }
 }
+
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -176,6 +180,7 @@ INSTALLED_APPS = (
     'deepdive',
     'helperapp',
     'djangotoolbox',
+    'rest_framework',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -211,4 +216,13 @@ LOGGING = {
             'propagate': True,
         },
     }
+}
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'PAGINATE_BY': 10,
 }
