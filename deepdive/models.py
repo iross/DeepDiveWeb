@@ -28,9 +28,19 @@ class ProcForm(forms.Form):
 class Article(models.Model):
     class Meta:
         db_table = 'articles'
-    title = models.CharField(max_length = 1024)
-    pubname = models.CharField(max_length = 256)
-    sha1 = models.CharField(max_length = 32)
+    title = models.CharField(max_length = 1024, null=True)
+    pubname = models.CharField(max_length = 256, null=True)
+    sha1 = models.CharField(max_length = 32, null=True)
+    vol = models.CharField(max_length = 32, null=True)
+    issue = models.CharField(max_length = 32, null=True)
+    startingPage = models.CharField(max_length = 32, null=True)
+    endingPage = models.CharField(max_length = 32, null=True)
+    URL = models.CharField(max_length = 256, null=True)
+    ocr_processing = DictField(null=True)
+    nlp_processing = DictField(null=True)
+    cuneiform_processing = DictField(null=True)
+    fonttype_processing = DictField(null=True)
+    objects = MongoDBManager()
 
 class NlpProcessing(models.Model):
     tag = models.CharField(max_length = 256)
