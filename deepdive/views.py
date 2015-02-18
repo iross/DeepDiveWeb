@@ -4,8 +4,11 @@ from collections import OrderedDict
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, filters, status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from bson.objectid import ObjectId
+import django_filters
 import ConfigParser
 import pymongo
 import datetime
@@ -31,8 +34,31 @@ def processing(request):
     return render(request, 'deepdive/tag.html', {'proctype':proctype, 'tag':tag})
 
 class ArticleViewSet(viewsets.ModelViewSet):
+    # add a query here + use Article.objects.raw_query( <search junk here> )
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
+    search_fields = ('title', 'pubname')
+#    filter_backends = (filters.SearchFilter,)
+
+@api_view(['GET'])
+def article_list(request):
+#        cursor = articles.find(
+#                {'$text':{'$search':query_string}},
+#                {"contents":0,
+#                    "ocr_processing":0,
+#                    "nlp_processing":0,
+#                    "cuneiform_processing":0,
+#                    "fonttype_processing":0,
+#                 'score':{'$meta': 'textScore'}})
+#        cursor = cursor.sort([('score', {'$meta': 'textScore'})]).limit(50)
+    if request.method == 'GET':
+        if ('q' in request.GET) and request.GET['q'].strip():
+            query_string = request.GET['q']
+            articles = Article.objects.raw_query({ "pubname": query_string })
+            serializer = ArticleSerializer(articles, many=True)
+        else:
+            articles = Article.objects.raw_query({})
+        return Response(serializer.data)
 
 @login_required
 def processingForm(request, proctype="OCR"):

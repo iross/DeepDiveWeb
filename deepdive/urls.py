@@ -2,12 +2,9 @@ from django.conf.urls import patterns,url,include
 from deepdive import views
 from rest_framework import routers
 
-router = routers.DefaultRouter()
-router.register(r'articles', views.ArticleViewSet)
-
 urlpatterns = patterns('',
         url(r'^$', views.index, name='index'),
-        url(r'^apitest/', include(router.urls)),
+        url(r'^apitest/articles', views.article_list),
         url(r'^article/(?P<articleId>[A-Za-z0-9]+)$', views.article, name='article'),
         url(r'^tag/(?P<proctype>[A-Za-z0-9]+)/(?P<tag>[A-Za-z0-9_]+)$', views.tag_type, name='tag_type'),
         url(r'^tag/(?P<tag>[A-Za-z0-9_]+)$', views.tag, name='tag'),
