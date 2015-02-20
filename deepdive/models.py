@@ -60,6 +60,13 @@ class OcrProcessing(models.Model):
     class Meta:
         db_table = "ocr_processing"
 
+class Metric(models.Model):
+    class Meta:
+        db_table="hour_view"
+    metrics = DictField()
+    time = models.DateTimeField()
+    objects = MongoDBManager()
+
 class Publication(models.Model):
     title = models.CharField(max_length=256)
 #    id = models.CharField()

@@ -1,5 +1,5 @@
 # Create your views here.
-from deepdive.models import Publication, Article, NlpProcessing, OcrProcessing,ProcForm
+from deepdive.models import Publication, Article, NlpProcessing, OcrProcessing,ProcForm, Metric
 from collections import OrderedDict
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -11,12 +11,11 @@ from bson.objectid import ObjectId
 import django_filters
 import ConfigParser
 import pymongo
-import datetime
 import re
 import pdb
 from django.conf import settings
 import urllib
-from deepdive.serializers import ArticleSerializer
+from deepdive.serializers import ArticleSerializer, MetricSerializer
 
 config = ConfigParser.RawConfigParser()
 config.read(settings.BASE_DIR + '/deepdiveweb.cfg')
@@ -55,10 +54,16 @@ def article_list(request):
         if ('q' in request.GET) and request.GET['q'].strip():
             query_string = request.GET['q']
             articles = Article.objects.raw_query({ "pubname": query_string })
-            serializer = ArticleSerializer(articles, many=True)
         else:
             articles = Article.objects.raw_query({})
+        serializer = ArticleSerializer(articles, many=True)
         return Response(serializer.data)
+
+@api_view(['GET'])
+def metric_list(request):
+    metrics = Metric.objects.raw_query({})
+    serializer = MetricSerializer(metrics, many=True)
+    return Response(serializer.data)
 
 @login_required
 def processingForm(request, proctype="OCR"):

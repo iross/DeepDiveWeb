@@ -5,6 +5,7 @@ from rest_framework import routers
 urlpatterns = patterns('',
         url(r'^$', views.index, name='index'),
         url(r'^api/articles', views.article_list),
+        url(r'^api/metrics', views.metric_list),
         url(r'^article/(?P<articleId>[A-Za-z0-9]+)$', views.article, name='article'),
         url(r'^tag/(?P<proctype>[A-Za-z0-9]+)/(?P<tag>[A-Za-z0-9_]+)$', views.tag_type, name='tag_type'),
         url(r'^tag/(?P<tag>[A-Za-z0-9_]+)$', views.tag, name='tag'),

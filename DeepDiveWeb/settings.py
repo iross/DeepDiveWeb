@@ -45,6 +45,14 @@ DATABASES = {
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.
         },
+    'hour_view': {
+        'ENGINE': 'django_mongodb_engine', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'fetching_metrics_dev',                      # Or path to database file if using sqlite3.
+        'USER': readeruser,
+        'PASSWORD': readerpassword,
+        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '',                      # Set to empty string for default.
+    },
     'publications': {
         'ENGINE': 'django_mongodb_engine', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'journals_dev',                      # Or path to database file if using sqlite3.
