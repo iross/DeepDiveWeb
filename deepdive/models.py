@@ -63,8 +63,8 @@ class OcrProcessing(models.Model):
 class Metric(models.Model):
     class Meta:
         db_table="hour_view"
-    metrics = DictField()
-    time = models.DateTimeField()
+    metrics = DictField(null=True)
+    time = models.DateTimeField(null=True)
     objects = MongoDBManager()
 
 class Publication(models.Model):

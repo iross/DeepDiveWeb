@@ -402,16 +402,16 @@ def index(request):
         for timestamp in docs:
             cputotal = 0
             times.append(timestamp['time'].strftime(FORMAT))
-            totals.append(timestamp['total']['fetched'])
+            totals.append(timestamp['metrics']['total']['fetched'])
             for proctype in PROCTYPES:
-                total[proctype].append(timestamp['total'][proctype]['total'])
-                success[proctype].append(timestamp['total'][proctype]['success'])
+                total[proctype].append(timestamp['metrics']['total'][proctype]['total'])
+                success[proctype].append(timestamp['metrics']['total'][proctype]['success'])
                 try:
-                    cputotal+=timestamp['total'][proctype]['cpusuccess']
+                    cputotal+=timestamp['metrics']['total'][proctype]['cpusuccess']
                 except KeyError:
                     pass
                 try:
-                    cputotal+=timestamp['total'][proctype]['cpufailure']
+                    cputotal+=timestamp['metrics']['total'][proctype]['cpufailure']
                 except KeyError:
                     pass
                 cputime[proctype].append(float(cputotal)/3600.0)
@@ -525,7 +525,7 @@ def pub(request, pubpermalink):
 
     uri = "mongodb://%s:%s@127.0.0.1/?authMechanism=MONGODB-CR" % (reader_user, reader_password)
     client = pymongo.MongoClient(uri)
-    pubsdb = client.publications_dev
+    pubsdb = client.publications
     pubs = pubsdb.publications
     procdb = client.processing
     pubname = pubs.find_one({"_id": pubpermalink})["pubname"]
