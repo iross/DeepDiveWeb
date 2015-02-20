@@ -317,13 +317,13 @@ def getPubCounts(pubname, tag, processingColl):
 
     temp = {"failure": ["Failure", 0], "success": ["Success", 0] }
     try:
-        temp['success'] = ['Success', totals['success']]
-        pubDict["total"] += totals['success']
+        temp['success'] = ['Success', int(totals['success'])]
+        pubDict["total"] += int(totals['success'])
     except KeyError:
         temp['success'] = ['Success', 0]
     try:
-        temp["failure"] = ['Failure', totals['failure']]
-        pubDict["total"] += totals['failure']
+        temp["failure"] = ['Failure', int(totals['failure'])]
+        pubDict["total"] += int(totals['failure'])
     except KeyError:
         temp["failure"] = ['Failure', 0]
     pubDict["data"].append(temp['success'])
@@ -420,9 +420,9 @@ def index(request):
         range["cputime"]["total"] = 0
         # for proctype for success/failures
         for proctype in PROCTYPES:
-            range["success"][proctype] = success[proctype][-1] - success[proctype][0]
-            range["failure"][proctype] = (total[proctype][-1] - success[proctype][-1]) -\
-                (total[proctype][0] - success[proctype][0])
+            range["success"][proctype] = int(success[proctype][-1] - success[proctype][0])
+            range["failure"][proctype] = int(total[proctype][-1] - success[proctype][-1]) -\
+                int(total[proctype][0] - success[proctype][0])
             proctype_totals[proctype] = [proctype] + total[proctype]
             proctype_dict[timeframe][proctype] = proctype_totals[proctype]
             range["success"]["total"] += range["success"][proctype]
