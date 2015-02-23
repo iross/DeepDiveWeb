@@ -61,11 +61,27 @@ class OcrProcessing(models.Model):
         db_table = "ocr_processing"
 
 class Metric(models.Model):
-    class Meta:
-        db_table="hour_view"
     metrics = DictField(null=True)
     time = models.DateTimeField(null=True)
     objects = MongoDBManager()
+    class Meta:
+        abstract = True
+
+class HourMetric(Metric):
+    class Meta:
+        db_table="hour_view"
+
+class DayMetric(Metric):
+    class Meta:
+        db_table="day_view"
+
+class WeekMetric(Metric):
+    class Meta:
+        db_table="week_view"
+
+class MonthMetric(Metric):
+    class Meta:
+        db_table="month_view"
 
 class Publication(models.Model):
     title = models.CharField(max_length=256)

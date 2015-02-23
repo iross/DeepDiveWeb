@@ -1,5 +1,5 @@
 # Create your views here.
-from deepdive.models import Publication, Article, NlpProcessing, OcrProcessing,ProcForm, Metric
+from deepdive.models import Publication, Article, NlpProcessing, OcrProcessing,ProcForm, HourMetric, DayMetric, WeekMetric, MonthMetric
 from collections import OrderedDict
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -15,7 +15,7 @@ import re
 import pdb
 from django.conf import settings
 import urllib
-from deepdive.serializers import ArticleSerializer, MetricSerializer
+from deepdive.serializers import ArticleSerializer, HourSerializer, DaySerializer, WeekSerializer, MonthSerializer
 
 config = ConfigParser.RawConfigParser()
 config.read(settings.BASE_DIR + '/deepdiveweb.cfg')
@@ -41,15 +41,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
 @api_view(['GET'])
 def article_list(request):
-#        cursor = articles.find(
-#                {'$text':{'$search':query_string}},
-#                {"contents":0,
-#                    "ocr_processing":0,
-#                    "nlp_processing":0,
-#                    "cuneiform_processing":0,
-#                    "fonttype_processing":0,
-#                 'score':{'$meta': 'textScore'}})
-#        cursor = cursor.sort([('score', {'$meta': 'textScore'})]).limit(50)
     if request.method == 'GET':
         if ('q' in request.GET) and request.GET['q'].strip():
             query_string = request.GET['q']
@@ -61,8 +52,22 @@ def article_list(request):
 
 @api_view(['GET'])
 def metric_list(request):
-    metrics = Metric.objects.raw_query({})
-    serializer = MetricSerializer(metrics, many=True)
+    if ('q' in request.GET) and request.GET['q'].strip():
+        timespan = request.GET['q']
+    else:
+        timespan = "hour"
+    if timespan == "day":
+        metrics = DayMetric.objects.raw_query({})
+        serializer = DaySerializer(metrics, many=True)
+    elif timespan == "week":
+        metrics = WeekMetric.objects.raw_query({})
+        serializer = WeekSerializer(metrics, many=True)
+    elif timespan == "month":
+        metrics = MonthMetric.objects.raw_query({})
+        serializer = MonthSerializer(metrics, many=True)
+    else:
+        metrics = HourMetric.objects.raw_query({})
+        serializer = HourSerializer(metrics, many=True)
     return Response(serializer.data)
 
 @login_required
