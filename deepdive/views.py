@@ -41,13 +41,27 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
 @api_view(['GET'])
 def article_list(request):
+    """
+        cursor = articles.find(
+                {'$text':{'$search':query_string}},
+                {"contents":0,
+                    "ocr_processing":0,
+                    "nlp_processing":0,
+                    "cuneiform_processing":0,
+                    "fonttype_processing":0,
+                 'score':{'$meta': 'textScore'}})
+        cursor = cursor.sort([('score', {'$meta': 'textScore'})]).limit(50)
+    """
     if request.method == 'GET':
+        # issue: how to go from cursor above to querylist?
         if ('q' in request.GET) and request.GET['q'].strip():
             query_string = request.GET['q']
             articles = Article.objects.raw_query({ "pubname": query_string })
         else:
             articles = Article.objects.raw_query({})
+        # articles is a QuerySet -- looks like a list of Article objects
         serializer = ArticleSerializer(articles, many=True)
+        pdb.set_trace()
         return Response(serializer.data)
 
 @api_view(['GET'])
@@ -55,8 +69,11 @@ def metric_list(request):
     if ('q' in request.GET) and request.GET['q'].strip():
         timespan = request.GET['q']
     else:
-        timespan = "hour"
-    if timespan == "day":
+        timespan = "now"
+    if timespan == "hour":
+        metrics = HourMetric.objects.raw_query({})
+        serializer = HourSerializer(metrics, many=True)
+    elif timespan == "day":
         metrics = DayMetric.objects.raw_query({})
         serializer = DaySerializer(metrics, many=True)
     elif timespan == "week":
@@ -66,8 +83,8 @@ def metric_list(request):
         metrics = MonthMetric.objects.raw_query({})
         serializer = MonthSerializer(metrics, many=True)
     else:
-        metrics = HourMetric.objects.raw_query({})
-        serializer = HourSerializer(metrics, many=True)
+        metrics = HourMetric.objects.all()[0]
+        serializer = HourSerializer(metrics)
     return Response(serializer.data)
 
 @login_required
