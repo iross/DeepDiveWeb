@@ -83,7 +83,7 @@ def metric_list(request):
         metrics = MonthMetric.objects.raw_query({})
         serializer = MonthSerializer(metrics, many=True)
     else:
-        metrics = HourMetric.objects.all()[0]
+        metrics = HourMetric.objects.all()[59]
         serializer = HourSerializer(metrics)
     return Response(serializer.data)
 
