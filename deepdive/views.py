@@ -4,9 +4,6 @@ from collections import OrderedDict
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from rest_framework import viewsets, filters, status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from bson.objectid import ObjectId
 import django_filters
 import ConfigParser
@@ -15,7 +12,6 @@ import re
 import pdb
 from django.conf import settings
 import urllib
-from deepdive.serializers import ArticleSerializer, HourSerializer, DaySerializer, WeekSerializer, MonthSerializer
 
 config = ConfigParser.RawConfigParser()
 config.read(settings.BASE_DIR + '/deepdiveweb.cfg')
@@ -31,60 +27,6 @@ def processing(request):
     if request.method == "POST":
         form = ProcForm(request.POST)
     return render(request, 'deepdive/tag.html', {'proctype':proctype, 'tag':tag})
-
-class ArticleViewSet(viewsets.ModelViewSet):
-    # add a query here + use Article.objects.raw_query( <search junk here> )
-    queryset = Article.objects.all()
-    serializer_class = ArticleSerializer
-    search_fields = ('title', 'pubname')
-#    filter_backends = (filters.SearchFilter,)
-
-@api_view(['GET'])
-def article_list(request):
-    """
-        cursor = articles.find(
-                {'$text':{'$search':query_string}},
-                {"contents":0,
-                    "ocr_processing":0,
-                    "nlp_processing":0,
-                    "cuneiform_processing":0,
-                    "fonttype_processing":0,
-                 'score':{'$meta': 'textScore'}})
-        cursor = cursor.sort([('score', {'$meta': 'textScore'})]).limit(50)
-    """
-    if request.method == 'GET':
-        # issue: how to go from cursor above to querylist?
-        if ('q' in request.GET) and request.GET['q'].strip():
-            query_string = request.GET['q']
-            articles = Article.objects.raw_query({ "$text": {"$search": query_string }})
-        else:
-            articles = Article.objects.raw_query({})
-        # articles is a QuerySet -- looks like a list of Article objects
-        serializer = ArticleSerializer(articles, many=True)
-        return Response(serializer.data)
-
-@api_view(['GET'])
-def metric_list(request):
-    if ('q' in request.GET) and request.GET['q'].strip():
-        timespan = request.GET['q']
-    else:
-        timespan = "now"
-    if timespan == "hour":
-        metrics = HourMetric.objects.raw_query({})
-        serializer = HourSerializer(metrics, many=True)
-    elif timespan == "day":
-        metrics = DayMetric.objects.raw_query({})
-        serializer = DaySerializer(metrics, many=True)
-    elif timespan == "week":
-        metrics = WeekMetric.objects.raw_query({})
-        serializer = WeekSerializer(metrics, many=True)
-    elif timespan == "month":
-        metrics = MonthMetric.objects.raw_query({})
-        serializer = MonthSerializer(metrics, many=True)
-    else:
-        metrics = HourMetric.objects.all()[59]
-        serializer = HourSerializer(metrics)
-    return Response(serializer.data)
 
 @login_required
 def processingForm(request, proctype="OCR"):
