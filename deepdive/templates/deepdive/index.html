@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 {% load template_helpers %}
-
 {% block content %}
 <script>
     function makeChart(div, time, fetched, ocred, nlped, cuneiformed, fonttyped){
@@ -74,7 +73,7 @@
 
     <div style="text-align: center">
         <table class="table" style="margin-left:auto; margin-right:auto;">
-        {% for timeframe, timedict in ranges.items %}
+            {% for timeframe, timedict in ranges.items %}
             <tr>
                 <td colspan="2">
                     <h3 style="font-size: 3em;">{{ timeframe|capfirst }}</h3>
@@ -139,45 +138,46 @@
                     </table>
                 </td>
             </tr>
-        {% endfor %}
+            {% endfor %}
         </table>
 
-        </div>
-        <script>
-            var hour_time = {{ times.hour|safe }} 
-            var hour_data = {{ totals.hour|safe }}
-            var hour_ocr_data = {{ proctypedict.hour.ocr|safe }}
-            var hour_nlp_data = {{ proctypedict.hour.nlp|safe }}
-            var hour_cuneiform_data = {{ proctypedict.hour.cuneiform|safe }}
-            var hour_fonttype_data = {{ proctypedict.hour.fonttype|safe }}
-            makeChart('#hour', hour_time, hour_data, hour_ocr_data, hour_nlp_data, hour_cuneiform_data, hour_fonttype_data)
-        </script>
-        <script>
-            var day_time = {{ times.day|safe }} 
-            var day_data = {{ totals.day|safe }}
-            var day_ocr_data = {{ proctypedict.day.ocr|safe }}
-            var day_nlp_data = {{ proctypedict.day.nlp|safe }}
-            var day_cuneiform_data = {{ proctypedict.day.cuneiform|safe }}
-            var day_fonttype_data = {{ proctypedict.day.fonttype|safe }}
-            makeChart('#day', day_time, day_data, day_ocr_data, day_nlp_data, day_cuneiform_data, day_fonttype_data)
-        </script>
-        <script>
-            var week_time = {{ times.week|safe }} 
-            var week_data = {{ totals.week|safe }}
-            var week_ocr_data = {{ proctypedict.week.ocr|safe }}
-            var week_nlp_data = {{ proctypedict.week.nlp|safe }}
-            var week_cuneiform_data = {{ proctypedict.week.cuneiform|safe }}
-            var week_fonttype_data = {{ proctypedict.week.fonttype|safe }}
-            makeChart('#week', week_time, week_data, week_ocr_data, week_nlp_data, week_cuneiform_data, week_fonttype_data)
-        </script>
-        <script>
-            var month_time = {{ times.month|safe }} 
-            var month_data = {{ totals.month|safe }}
-            var month_ocr_data = {{ proctypedict.month.ocr|safe }}
-            var month_nlp_data = {{ proctypedict.month.nlp|safe }}
-            var month_cuneiform_data = {{ proctypedict.month.cuneiform|safe }}
-            var month_fonttype_data = {{ proctypedict.month.fonttype|safe }}
-            makeChart('#month', month_time, month_data, month_ocr_data, month_nlp_data, month_cuneiform_data, month_fonttype_data)
-        </script>
-    </body>
+    </div>
+    <script>
+        var hour_time = {{ times.hour|safe }} 
+        var hour_data = {{ totals.hour|safe }}
+        var hour_ocr_data = {{ proctypedict.hour.ocr|safe }}
+        var hour_nlp_data = {{ proctypedict.hour.nlp|safe }}
+        var hour_cuneiform_data = {{ proctypedict.hour.cuneiform|safe }}
+        var hour_fonttype_data = {{ proctypedict.hour.fonttype|safe }}
+        makeChart('#hour', hour_time, hour_data, hour_ocr_data, hour_nlp_data, hour_cuneiform_data, hour_fonttype_data)
+    </script>
+    <script>
+        var day_time = {{ times.day|safe }} 
+        var day_data = {{ totals.day|safe }}
+        var day_ocr_data = {{ proctypedict.day.ocr|safe }}
+        var day_nlp_data = {{ proctypedict.day.nlp|safe }}
+        var day_cuneiform_data = {{ proctypedict.day.cuneiform|safe }}
+        var day_fonttype_data = {{ proctypedict.day.fonttype|safe }}
+        makeChart('#day', day_time, day_data, day_ocr_data, day_nlp_data, day_cuneiform_data, day_fonttype_data)
+    </script>
+    <script>
+        var week_time = {{ times.week|safe }} 
+        var week_data = {{ totals.week|safe }}
+        var week_ocr_data = {{ proctypedict.week.ocr|safe }}
+        var week_nlp_data = {{ proctypedict.week.nlp|safe }}
+        var week_cuneiform_data = {{ proctypedict.week.cuneiform|safe }}
+        var week_fonttype_data = {{ proctypedict.week.fonttype|safe }}
+        makeChart('#week', week_time, week_data, week_ocr_data, week_nlp_data, week_cuneiform_data, week_fonttype_data)
+    </script>
+    <script>
+        var month_time = {{ times.month|safe }} 
+        var month_data = {{ totals.month|safe }}
+        var month_ocr_data = {{ proctypedict.month.ocr|safe }}
+        var month_nlp_data = {{ proctypedict.month.nlp|safe }}
+        var month_cuneiform_data = {{ proctypedict.month.cuneiform|safe }}
+        var month_fonttype_data = {{ proctypedict.month.fonttype|safe }}
+        makeChart('#month', month_time, month_data, month_ocr_data, month_nlp_data, month_cuneiform_data, month_fonttype_data)
+    </script>
+</div>
+</body>
     {% endblock %}
