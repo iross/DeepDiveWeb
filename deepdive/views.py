@@ -56,12 +56,11 @@ def article_list(request):
         # issue: how to go from cursor above to querylist?
         if ('q' in request.GET) and request.GET['q'].strip():
             query_string = request.GET['q']
-            articles = Article.objects.raw_query({ "pubname": query_string })
+            articles = Article.objects.raw_query({ "$text": {"$search": query_string }})
         else:
             articles = Article.objects.raw_query({})
         # articles is a QuerySet -- looks like a list of Article objects
         serializer = ArticleSerializer(articles, many=True)
-        pdb.set_trace()
         return Response(serializer.data)
 
 @api_view(['GET'])
