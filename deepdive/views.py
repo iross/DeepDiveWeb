@@ -599,7 +599,8 @@ def search(request):
             'total_n': total_n,
             }
 
-    return render(request, deepdive/search_results.html, context)
+    return HttpResponse(json.dumps(req.json(), indent=2), content_type='application/json')
+#    return render(request, 'deepdive/search_results.html', context)
 
 def test_count_session(request):
     if 'count' in request.session:
