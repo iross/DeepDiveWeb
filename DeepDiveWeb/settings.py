@@ -29,8 +29,8 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
-
-SITE_ID = "54e3aed875827d497bb017df"
+#
+SITE_ID = u"54e3aed875827d497bb017df"
 
 MANAGERS = ADMINS
 
@@ -237,7 +237,19 @@ DEBUG_TOOLBAR_PANELS = (
         'debug_toolbar_mongo.panel.MongoDebugPanel',
         )
 
-SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
+#SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+        "django.contrib.auth.context_processors.auth",
+        "django.core.context_processors.debug",
+        "django.core.context_processors.i18n",
+        "django.core.context_processors.media",
+        "django.core.context_processors.static",
+        "django.core.context_processors.tz",
+        "django.contrib.messages.context_processors.messages",
+        "django.core.context_processors.request",
+        "helperapp.context_processors.query_strings.query_strings",
+        )
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

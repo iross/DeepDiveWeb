@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Search</title>
+</head>
+<body>
+<form id="searchForm" action="" method="GET">
+{% if q %}
+    <input type="text" name="q" value="{{ q }} " /><p>
+{% else %}
+    <input type="text" placeholder="Query" name="q" /><p>
+{% endif %}
+{% if pubname %}
+    <input type="text" name="pubname" value="{{ pubname }}" /><p>
+{% else %}
+    <input type="text" placeholder="Publication name" name="pubname" /><p>
+{% endif %}
+<input type="button" value="Preview" name="preview" onclick="action_preview()" />
+<input type="button" value="Bundle" name="bundle" onclick="action_bundle()" />
+</form>
+<script>
+form=document.getElementById("searchForm");
+function action_preview() {
+        form.action="../search/";
+        form.submit();
+}
+function action_bundle() {
+        form.action="../bundle/";
+        form.submit();
+}
+ 
+</script>
+{% block content %}
+{% endblock %}
+</html>
