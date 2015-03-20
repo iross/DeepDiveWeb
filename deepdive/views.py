@@ -1,7 +1,7 @@
 # Create your views here.
 from deepdive.models import Publication, Article, NlpProcessing, OcrProcessing,ProcForm, HourMetric, DayMetric, WeekMetric, MonthMetric
 from collections import OrderedDict
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from bson.objectid import ObjectId
@@ -12,6 +12,9 @@ import re
 import pdb
 from django.conf import settings
 import urllib
+import os, zipfile, StringIO
+import requests, json
+
 
 config = ConfigParser.RawConfigParser()
 config.read(settings.BASE_DIR + '/deepdiveweb.cfg')
@@ -536,36 +539,72 @@ def article(request, articleId):
             }
     return render(request, 'deepdive/article.html', context)
 
-@login_required
+#@login_required
+def bundlefiles(request):
+    """
+    TODO: Docstring for bundlefiles.
+
+    :request: TODO
+    :returns: TODO
+
+    """
+    # TODO: get filenames based on API search
+    # TODO: get filenames based on bundling options
+    filenames = ["/home/iaross/temp/test1.txt" , "/home/iaross/temp/test2.txt"]
+
+    zip_dir = "fetched_files"
+    zip_filename = "%s.zip" % zip_dir
+    s = StringIO.StringIO()
+    zf = zipfile.ZipFile(s, "w")
+    for filepath in filenames:
+        fdir, fname = os.path.split(filepath)
+        zip_path = os.path.join(zip_dir, fname)
+        zf.write(filepath, zip_path)
+    zf.close()
+
+    # Grab ZIP file from in-memory, make response with correct MIME-type
+    resp = HttpResponse(s.getvalue(), mimetype = "application/x-zip-compressed")
+    # ..and correct content-disposition
+    resp['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
+
+    return resp
+
+def search_form(request):
+    """
+    TODO: Docstring for search)form.
+
+    :request: TODO
+    :returns: TODO
+
+    """
+    return render(request, 'deepdive/search_form.html')
+
+#@login_required
 def search(request):
-#    found_entries = None
-    # todo: limit number of results shown
-    articlesList=[]
-    uri = "mongodb://%s:%s@127.0.0.1/?authMechanism=MONGODB-CR" % (reader_user, reader_password)
-    client = pymongo.MongoClient(uri)
+    # parse form
+    url= 'http://deepdivesubmit.chtc.wisc.edu/api/articles?'
+    if 'q' in request.GET and request.GET['q']:
+        url+='q=%s&' % request.GET['q']
+    if 'pubname' in request.GET and request.GET['pubname']:
+        url+='pubname=%s&' % request.GET['pubname']
+    # a little cleanup
+    if url.endswith('&'):
+        url=url[:-1]
+    req = requests.get(url)
+    articles = req.json()['success']['data']
+    total_n  = len(articles)
 
-    articlesdb = client.articles_dev
-    articles = articlesdb["articles"]
+    context = {
+            'articles': articles,
+            'total_n': total_n,
+            }
 
+    return render(request, deepdive/search_results.html, context)
 
-    if ('q' in request.GET) and request.GET['q'].strip():
-        query_string = request.GET['q']
-        cursor = articles.find(
-                {'$text':{'$search':query_string}},
-                {"contents":0,
-                    "ocr_processing":0,
-                    "nlp_processing":0,
-                    "cuneiform_processing":0,
-                    "fonttype_processing":0,
-                 'score':{'$meta': 'textScore'}})
-        cursor = cursor.sort([('score', {'$meta': 'textScore'})]).limit(50)
-        for art in cursor:
-            art["id"] = art["_id"]
-            articlesList.append(art)
-
-#        db.articles.find({$text:{$search:'Adaville'}}, {contents:0,ocr_processing:0,nlp_processing:0,cuneiform_processing:0,fonttype_processing:0,score:{$meta: 'textScore'}}).sort({score:{$meta:'textScore'}}).pretty().limit(5)
-#        found_entries = Article.objects.search(query_string, raw=True)
-    return render(request,
-            'deepdive/search_results.html',
-            { 'query_string': query_string,
-                    'found_entries': articlesList, })
+def test_count_session(request):
+    if 'count' in request.session:
+        request.session['count'] += 1
+        return HttpResponse('new count=%s' % request.session['count'])
+    else:
+        request.session['count'] = 1
+        return HttpResponse('No count in session. Setting to 1')
